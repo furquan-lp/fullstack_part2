@@ -9,8 +9,12 @@ const App = () => {
   const addName = (event) => {
     event.preventDefault();
     const submittedName = { name: newName };
-    setPersons(persons.concat(submittedName))
-    setNewName('');
+    if (persons.findIndex(p => p.name === submittedName.name) === -1) {
+      setPersons(persons.concat(submittedName))
+      setNewName('');
+    } else {
+      alert(`${newName} already exists.`);
+    }
   };
 
   const handleTextChange = (event) => {
