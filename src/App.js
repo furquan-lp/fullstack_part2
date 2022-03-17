@@ -1,6 +1,14 @@
 const Header = ({ course }) => <h1>{course.name}</h1>;
 
-const Total = ({ sum }) => <p>Number of exercises {sum}</p>;
+const Total = ({ parts }) => {
+  let sum = 0;
+  parts.forEach(p => {
+    sum += p.exercises;
+  });
+  return (
+    <p>Number of exercises {sum}</p>
+  );
+};
 
 const Part = ({ part }) =>
   <p>
@@ -17,6 +25,7 @@ const Course = ({ course }) => {
     <>
       <Header course={course} />
       <Content parts={course.parts} />
+      <Total parts={course.parts} />
     </>
   );
 };
