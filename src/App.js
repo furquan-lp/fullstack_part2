@@ -13,9 +13,11 @@ const Country = ({ country }) =>
       {Object.keys(country.languages)
         .map(language => <li key={language}>{country.languages[language]}</li>)}
     </ul>
+    <img src={country.flags.png} />
   </>;
 
 const Countries = ({ countriesToShow, onShowButtonClick, showIndex }) => {
+  if (countriesToShow.length === 0) return null;
   const names = countriesToShow.map(country => country.name);
   const mapped = names.map((name, i) =>
     <p key={name.official}>
@@ -24,7 +26,7 @@ const Countries = ({ countriesToShow, onShowButtonClick, showIndex }) => {
   return (
     <>
       {mapped.length <= 10 ? mapped : <p>Too many matches</p>}
-      {showIndex >= 0 ? <Country country={countriesToShow[showIndex]} /> : <></>}
+      {showIndex >= 0 ? <Country country={countriesToShow[showIndex]} /> : null}
     </>);
 };
 
