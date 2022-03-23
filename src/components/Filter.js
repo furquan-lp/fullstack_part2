@@ -1,6 +1,8 @@
 const Person = ({ person }) => <p>{person.name} {person.number}</p>;
 
-const Filter = ({ persons, searchText, setSearch }) => {
+const ShowButton = ({ country, onClick }) => <button onClick={onClick}>show</button>;
+
+const Filter = ({ persons, searchText }) => {
   const personsToShow = searchText === '' ? persons
     : persons.filter(person => person.name.toLowerCase().includes(searchText.toLowerCase()));
   return (
@@ -11,4 +13,12 @@ const Filter = ({ persons, searchText, setSearch }) => {
   );
 }
 
-export default Filter;
+const CFilter = ({ namesToShow, searchText }) => {
+  const mapped = searchText === '' ? [''] : namesToShow
+    .map(name => <p key={name.official}>{name.common}</p>);
+  return (
+    <>{mapped.length <= 10 ? mapped : <p>Too many matches</p>}</>
+  );
+}
+
+export { Filter, CFilter };

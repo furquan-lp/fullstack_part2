@@ -1,54 +1,45 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Filter from './components/Filter';
+import { CFilter } from './components/Filter';
 
-const SearchField = ({ searchText, handleSearch }) =>
-  <>filter shown with a<input value={searchText} onChange={handleSearch} /></>;
+const SearchField = ({ text, searchText, handleSearch }) =>
+  <>{text}<input value={searchText} onChange={handleSearch} /></>;
 
-const Form = ({ onSubmit, newPerson, handleName, handleNum }) =>
-  <form onSubmit={onSubmit}>
-    <div>name: <input value={newPerson.name} onChange={handleName} /></div>
-    <div>number: <input value={newPerson.number} onChange={handleNum} /></div>
-    <div><button type="submit">add</button></div>
-  </form>;
+const Country = ({ country }) =>
+  <><h2>{country.name.official}</h2>
+    <p>capital {country.capital}</p>
+    <p>area {country.area}</p>
+    <b>languages</b>
+    <ul>
+      {Object.keys(country.languages)
+        .map(language => <li key={language}>{country.languages[language]}</li>)}
+    </ul>
+  </>;
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: '', number: '' }]);
-  const [newPerson, setNewPerson] = useState({ name: '', number: '' });
+  const [countries, setCountries] = useState([]);
   const [searchText, setSearch] = useState('');
 
   const hook = () => {
     axios
-      .get('http://localhost:3001/persons')
-      .then(response => setPersons(response.data));
+      .get('https://restcountries.com/v3.1/all')
+      .then(response => setCountries(response.data));
   };
   useEffect(hook, []);
 
-  const addName = (event) => {
-    event.preventDefault();
-    if (persons.findIndex(p =>
-      p.name === newPerson.name && p.number === newPerson.number) === -1) {
-      setPersons(persons.concat(newPerson))
-      setNewPerson({ name: '', number: '' });
-    } else {
-      alert(`${newPerson.name} already exists.`);
-    }
-  };
-
-  const handleNameChange = (event) =>
-    setNewPerson({ name: event.target.value, number: newPerson.number });
-  const handleNumChange = (event) =>
-    setNewPerson({ name: newPerson.name, number: event.target.value });
   const handleSearch = (event) => setSearch(event.target.value);
+
+  const countriesToShow = countries.filter(country =>
+    country.name.common.toLowerCase().includes(searchText.toLowerCase()));
+  const names = countriesToShow.map(country => country.name);
 
   return (
     <div>
-      <h2>Phonebook</h2>
-      <SearchField searchText={searchText} handleSearch={handleSearch} />
-      <h3>add a new</h3>
-      <Form onSubmit={addName} newPerson={newPerson} handleName={handleNameChange} handleNum={handleNumChange} />
-      <h2>Numbers</h2>
-      <Filter persons={persons} searchText={searchText} setSearch={setSearch} />
+      <h2>Countries</h2>
+      <SearchField text='find countries' searchText={searchText} handleSearch={handleSearch} />
+      {countriesToShow.length === 1 ?
+        <Country country={countriesToShow[0]} /> :
+        <CFilter namesToShow={names} searchText={searchText} />}
     </div>
   );
 };
