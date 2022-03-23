@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { CFilter } from './components/Filter';
 
 const SearchField = ({ text, searchText, handleSearch }) =>
   <>{text}<input value={searchText} onChange={handleSearch} /></>;
@@ -16,9 +15,23 @@ const Country = ({ country }) =>
     </ul>
   </>;
 
+const Countries = ({ countriesToShow, onShowButtonClick, showIndex }) => {
+  const names = countriesToShow.map(country => country.name);
+  const mapped = names.map((name, i) =>
+    <p key={name.official}>
+      {name.common}<button id={i} onClick={onShowButtonClick}>show</button>
+    </p>);
+  return (
+    <>
+      {mapped.length <= 10 ? mapped : <p>Too many matches</p>}
+      {showIndex >= 0 ? <Country country={countriesToShow[showIndex]} /> : <></>}
+    </>);
+};
+
 const App = () => {
   const [countries, setCountries] = useState([]);
   const [searchText, setSearch] = useState('');
+  const [showCountry, setShowCountry] = useState(-1);
 
   const hook = () => {
     axios
@@ -28,18 +41,19 @@ const App = () => {
   useEffect(hook, []);
 
   const handleSearch = (event) => setSearch(event.target.value);
+  const handleShowButton = (event) =>
+    setShowCountry(showCountry != event.target.id ? event.target.id : -1);
 
-  const countriesToShow = countries.filter(country =>
+  const countriesToShow = searchText === '' ? [] : countries.filter(country =>
     country.name.common.toLowerCase().includes(searchText.toLowerCase()));
-  const names = countriesToShow.map(country => country.name);
 
   return (
     <div>
       <h2>Countries</h2>
       <SearchField text='find countries' searchText={searchText} handleSearch={handleSearch} />
-      {countriesToShow.length === 1 ?
-        <Country country={countriesToShow[0]} /> :
-        <CFilter namesToShow={names} searchText={searchText} />}
+      <Countries countriesToShow={countriesToShow}
+        onShowButtonClick={handleShowButton}
+        showIndex={countriesToShow.length === 1 ? 0 : showCountry} />
     </div>
   );
 };

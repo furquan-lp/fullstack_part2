@@ -1,7 +1,5 @@
 const Person = ({ person }) => <p>{person.name} {person.number}</p>;
 
-const ShowButton = ({ country, onClick }) => <button onClick={onClick}>show</button>;
-
 const Filter = ({ persons, searchText }) => {
   const personsToShow = searchText === '' ? persons
     : persons.filter(person => person.name.toLowerCase().includes(searchText.toLowerCase()));
