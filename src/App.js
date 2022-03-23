@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import Filter from './components/Filter';
 
 const SearchField = ({ searchText, handleSearch }) =>
@@ -12,11 +13,16 @@ const Form = ({ onSubmit, newPerson, handleName, handleNum }) =>
   </form>;
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: 'Unknown' }
-  ]);
+  const [persons, setPersons] = useState([{ name: '', number: '' }]);
   const [newPerson, setNewPerson] = useState({ name: '', number: '' });
   const [searchText, setSearch] = useState('');
+
+  const hook = () => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => setPersons(response.data));
+  };
+  useEffect(hook, []);
 
   const addName = (event) => {
     event.preventDefault();
@@ -40,7 +46,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <SearchField searchText={searchText} handleSearch={handleSearch} />
       <h3>add a new</h3>
-      <Form onSubmit={addName} newPerson={newPerson} handleName={handleNameChange} handleNum={handleNameChange} />
+      <Form onSubmit={addName} newPerson={newPerson} handleName={handleNameChange} handleNum={handleNumChange} />
       <h2>Numbers</h2>
       <Filter persons={persons} searchText={searchText} setSearch={setSearch} />
     </div>
