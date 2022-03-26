@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Filter } from './components/Filter';
+import phonebook from './services/phoneNos';
 
 const SearchField = ({ searchText, handleSearch }) =>
   <>filter shown with a<input value={searchText} onChange={handleSearch} /></>;
@@ -17,17 +17,17 @@ const App = () => {
   const [newPerson, setNewPerson] = useState({ name: '', number: '' });
   const [searchText, setSearch] = useState('');
 
-  const url = 'http://localhost:3001/persons';
-  useEffect(() => axios.get(url)
-    .then(response => setPersons(response.data)), []);
+  useEffect(() => phonebook.getAll()
+    .then(response => setPersons(response)), []);
 
   const addName = (event) => {
     event.preventDefault();
     if (persons.findIndex(p =>
       p.name === newPerson.name && p.number === newPerson.number) === -1) {
-      axios.post(url, newPerson)
+      phonebook
+        .create(newPerson)
         .then(response => {
-          setPersons(persons.concat(response.data))
+          setPersons(persons.concat(response))
           setNewPerson({ name: '', number: '' });
         });
     } else {
