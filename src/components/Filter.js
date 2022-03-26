@@ -1,12 +1,14 @@
-const Person = ({ person }) => <p>{person.name} {person.number}</p>;
+const Person = ({ person, delButton, buttonId }) =>
+  <p>{person.name} {person.number}<button id={buttonId} onClick={delButton}>delete</button></p>;
 
-const Filter = ({ persons, searchText }) => {
+const Filter = ({ persons, searchText, delButton }) => {
   const personsToShow = searchText === '' ? persons
     : persons.filter(person => person.name.toLowerCase().includes(searchText.toLowerCase()));
   return (
     <>
       {personsToShow.map(person =>
-        <Person key={person.name + person.number} person={person} />)}
+        <Person key={person.name + person.number} person={person}
+          delButton={delButton} buttonId={person.id} />)}
     </>
   );
 }

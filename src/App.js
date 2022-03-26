@@ -18,7 +18,7 @@ const App = () => {
   const [searchText, setSearch] = useState('');
 
   useEffect(() => phonebook.getAll()
-    .then(response => setPersons(response)), []);
+    .then(response => setPersons(response)), [persons]);
 
   const addName = (event) => {
     event.preventDefault();
@@ -35,6 +35,13 @@ const App = () => {
     }
   };
 
+  const handleDelete = (event) => {
+    if (window.confirm(`Are you sure you want to delete ${event.target.parentNode.firstChild.data}?`)) {
+      phonebook.remove(event.target.id);
+      setPersons(persons.filter(person => person.id !== event.target.id));
+    }
+  };
+
   const handleNameChange = (event) =>
     setNewPerson({ name: event.target.value, number: newPerson.number });
   const handleNumChange = (event) =>
@@ -48,7 +55,7 @@ const App = () => {
       <h3>add a new</h3>
       <Form onSubmit={addName} newPerson={newPerson} handleName={handleNameChange} handleNum={handleNumChange} />
       <h2>Numbers</h2>
-      <Filter persons={persons} searchText={searchText} setSearch={setSearch} />
+      <Filter persons={persons} searchText={searchText} setSearch={setSearch} delButton={handleDelete} />
     </div>
   );
 };
