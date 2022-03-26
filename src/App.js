@@ -22,16 +22,22 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault();
-    if (persons.findIndex(p =>
-      p.name === newPerson.name && p.number === newPerson.number) === -1) {
-      phonebook
-        .create(newPerson)
+    const samePerson = persons.find(p => p.name === newPerson.name);
+    if (samePerson !== undefined && window.confirm(
+      `${newPerson.name} is already added to the phonebook, replace the old number?`
+    )) {
+      phonebook.update(samePerson.id, newPerson)
         .then(response => {
-          setPersons(persons.concat(response))
+          setPersons(persons.concat(response));
           setNewPerson({ name: '', number: '' });
         });
     } else {
-      alert(`${newPerson.name} already exists.`);
+      phonebook
+        .create(newPerson)
+        .then(response => {
+          setPersons(persons.concat(response));
+          setNewPerson({ name: '', number: '' });
+        });
     }
   };
 
