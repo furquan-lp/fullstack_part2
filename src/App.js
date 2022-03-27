@@ -12,10 +12,32 @@ const Form = ({ onSubmit, newPerson, handleName, handleNum }) =>
     <div><button type="submit">add</button></div>
   </form>;
 
+const Notification = ({ message }) => {
+  const notificationStyle = {
+    color: 'white',
+    background: '#9fd3c7',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    borderColor: '#79c2d0',
+    padding: 10,
+    marginBottom: 10
+  };
+
+  if (message === null) {
+    return null;
+  }
+  return (
+    <div style={notificationStyle}>
+      {message}
+    </div>);
+};
+
 const App = () => {
   const [persons, setPersons] = useState([{ name: '', number: '' }]);
   const [newPerson, setNewPerson] = useState({ name: '', number: '' });
   const [searchText, setSearch] = useState('');
+  const [notMsg, setNotMsg] = useState(null);
 
   useEffect(() => phonebook.getAll()
     .then(response => setPersons(response)), [persons]);
@@ -31,6 +53,8 @@ const App = () => {
           setPersons(persons.concat(response));
           setNewPerson({ name: '', number: '' });
         });
+      setNotMsg(`Replaced ${newPerson.name}'s phone number`);
+      setTimeout(() => setNotMsg(null), 2000);
     } else {
       phonebook
         .create(newPerson)
@@ -38,6 +62,8 @@ const App = () => {
           setPersons(persons.concat(response));
           setNewPerson({ name: '', number: '' });
         });
+      setNotMsg(`Added ${newPerson.name}`);
+      setTimeout(() => setNotMsg(null), 2000);
     }
   };
 
@@ -45,6 +71,8 @@ const App = () => {
     if (window.confirm(`Are you sure you want to delete ${event.target.parentNode.firstChild.data}?`)) {
       phonebook.remove(event.target.id);
       setPersons(persons.filter(person => person.id !== event.target.id));
+      setNotMsg(`Deleted ${event.target.parentNode.firstChild.data}`);
+      setTimeout(() => setNotMsg(null), 2000);
     }
   };
 
@@ -57,6 +85,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notMsg} />
       <SearchField searchText={searchText} handleSearch={handleSearch} />
       <h3>add a new</h3>
       <Form onSubmit={addName} newPerson={newPerson} handleName={handleNameChange} handleNum={handleNumChange} />
