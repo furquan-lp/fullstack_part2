@@ -42,6 +42,11 @@ const App = () => {
   useEffect(() => phonebook.getAll()
     .then(response => setPersons(response)), [persons]);
 
+  const setNotification = (message) => {
+    setNotMsg(message);
+    setTimeout(() => setNotMsg(null), 2000);
+  };
+
   const addName = (event) => {
     event.preventDefault();
     const samePerson = persons.find(p => p.name === newPerson.name);
@@ -52,9 +57,8 @@ const App = () => {
         .then(response => {
           setPersons(persons.concat(response));
           setNewPerson({ name: '', number: '' });
-        });
-      setNotMsg(`Replaced ${newPerson.name}'s phone number`);
-      setTimeout(() => setNotMsg(null), 2000);
+          setNotification(`Replaced ${newPerson.name}'s phone number`);
+        }).catch(error => setNotification(`${newPerson.name} was already deleted from the server`));
     } else {
       phonebook
         .create(newPerson)
@@ -62,8 +66,7 @@ const App = () => {
           setPersons(persons.concat(response));
           setNewPerson({ name: '', number: '' });
         });
-      setNotMsg(`Added ${newPerson.name}`);
-      setTimeout(() => setNotMsg(null), 2000);
+      setNotification(`Added ${newPerson.name}`);
     }
   };
 
